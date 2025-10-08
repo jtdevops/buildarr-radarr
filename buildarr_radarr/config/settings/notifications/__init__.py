@@ -84,7 +84,7 @@ NotificationType = Union[
 ]
 
 NOTIFICATION_TYPE_MAP = {
-    notification_type.__dict__["_implementation"]: notification_type
+    notification_type.__private_attributes__["_implementation"].default: notification_type
     for notification_type in (
         AppriseNotification,
         BoxcarNotification,

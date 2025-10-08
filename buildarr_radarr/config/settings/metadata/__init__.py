@@ -36,7 +36,7 @@ from .roksbox import RoksboxMetadata
 from .wdtv import WdtvMetadata
 
 METADATA_TYPE_MAP = {
-    metadata_type.__dict__["_implementation"]: metadata_type
+    metadata_type.__private_attributes__["_implementation"].default: metadata_type
     for metadata_type in (EmbyLegacyMetadata, KodiEmbyMetadata, RoksboxMetadata, WdtvMetadata)
 }
 
@@ -73,10 +73,10 @@ class RadarrMetadataSettings(RadarrConfigBase):
                 api_metadata.implementation: api_metadata
                 for api_metadata in metadata_api.list_metadata()
             }
-        emby_legacy_impl = EmbyLegacyMetadata.__dict__["_implementation"]
-        kodi_emby_impl = KodiEmbyMetadata.__dict__["_implementation"]
-        roksbox_impl = RoksboxMetadata.__dict__["_implementation"]
-        wdtv_impl = WdtvMetadata.__dict__["_implementation"]
+        emby_legacy_impl = EmbyLegacyMetadata.__private_attributes__["_implementation"].default
+        kodi_emby_impl = KodiEmbyMetadata.__private_attributes__["_implementation"].default
+        roksbox_impl = RoksboxMetadata.__private_attributes__["_implementation"].default
+        wdtv_impl = WdtvMetadata.__private_attributes__["_implementation"].default
         if emby_legacy_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Emby (Legacy) metadata on Radarr, database might be corrupt",
@@ -131,10 +131,10 @@ class RadarrMetadataSettings(RadarrConfigBase):
                 api_metadata.implementation: api_metadata
                 for api_metadata in metadata_api.list_metadata()
             }
-        emby_legacy_impl = EmbyLegacyMetadata.__dict__["_implementation"]
-        kodi_emby_impl = KodiEmbyMetadata.__dict__["_implementation"]
-        roksbox_impl = RoksboxMetadata.__dict__["_implementation"]
-        wdtv_impl = WdtvMetadata.__dict__["_implementation"]
+        emby_legacy_impl = EmbyLegacyMetadata.__private_attributes__["_implementation"].default
+        kodi_emby_impl = KodiEmbyMetadata.__private_attributes__["_implementation"].default
+        roksbox_impl = RoksboxMetadata.__private_attributes__["_implementation"].default
+        wdtv_impl = WdtvMetadata.__private_attributes__["_implementation"].default
         if emby_legacy_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Emby (Legacy) metadata on Radarr, database might be corrupt",
