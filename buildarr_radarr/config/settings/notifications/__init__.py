@@ -84,7 +84,7 @@ NotificationType = Union[
 ]
 
 NOTIFICATION_TYPE_MAP = {
-    notification_type._implementation: notification_type  # type: ignore[attr-defined]
+    notification_type.__dict__["_implementation"]: notification_type
     for notification_type in (
         AppriseNotification,
         BoxcarNotification,

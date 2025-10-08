@@ -51,7 +51,7 @@ from .usenet.sabnzbd import SabnzbdDownloadClient
 logger = getLogger(__name__)
 
 DOWNLOADCLIENT_TYPE_MAP = {
-    downloadclient_type._implementation: downloadclient_type  # type: ignore[attr-defined]
+    downloadclient_type.__dict__["_implementation"]: downloadclient_type
     for downloadclient_type in (
         Aria2DownloadClient,
         DelugeDownloadClient,

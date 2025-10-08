@@ -36,7 +36,7 @@ from .roksbox import RoksboxMetadata
 from .wdtv import WdtvMetadata
 
 METADATA_TYPE_MAP = {
-    metadata_type._implementation: metadata_type  # type: ignore[attr-defined]
+    metadata_type.__dict__["_implementation"]: metadata_type
     for metadata_type in (EmbyLegacyMetadata, KodiEmbyMetadata, RoksboxMetadata, WdtvMetadata)
 }
 
@@ -73,39 +73,43 @@ class RadarrMetadataSettings(RadarrConfigBase):
                 api_metadata.implementation: api_metadata
                 for api_metadata in metadata_api.list_metadata()
             }
-        if EmbyLegacyMetadata._implementation not in api_metadatas:
+        emby_legacy_impl = EmbyLegacyMetadata.__dict__["_implementation"]
+        kodi_emby_impl = KodiEmbyMetadata.__dict__["_implementation"]
+        roksbox_impl = RoksboxMetadata.__dict__["_implementation"]
+        wdtv_impl = WdtvMetadata.__dict__["_implementation"]
+        if emby_legacy_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Emby (Legacy) metadata on Radarr, database might be corrupt",
             )
-        if KodiEmbyMetadata._implementation not in api_metadatas:
+        if kodi_emby_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Kodi (XBMC)/Emby metadata on Radarr, database might be corrupt",
             )
-        if RoksboxMetadata._implementation not in api_metadatas:
+        if roksbox_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Roksbox metadata on Radarr, database might be corrupt",
             )
-        if WdtvMetadata._implementation not in api_metadatas:
+        if wdtv_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find WDTV metadata on Radarr, database might be corrupt",
             )
         return cls(
             **cls.get_local_attrs(remote_map=cls._remote_map, remote_attrs=api_config.to_dict()),
             emby_legacy=EmbyLegacyMetadata._from_remote(
-                api_schema=api_metadata_schemas[EmbyLegacyMetadata._implementation],
-                api_metadata=api_metadatas[EmbyLegacyMetadata._implementation],
+                api_schema=api_metadata_schemas[emby_legacy_impl],
+                api_metadata=api_metadatas[emby_legacy_impl],
             ),
             kodi_emby=KodiEmbyMetadata._from_remote(
-                api_schema=api_metadata_schemas[KodiEmbyMetadata._implementation],
-                api_metadata=api_metadatas[KodiEmbyMetadata._implementation],
+                api_schema=api_metadata_schemas[kodi_emby_impl],
+                api_metadata=api_metadatas[kodi_emby_impl],
             ),
             roksbox=RoksboxMetadata._from_remote(
-                api_schema=api_metadata_schemas[RoksboxMetadata._implementation],
-                api_metadata=api_metadatas[RoksboxMetadata._implementation],
+                api_schema=api_metadata_schemas[roksbox_impl],
+                api_metadata=api_metadatas[roksbox_impl],
             ),
             wdtv=WdtvMetadata._from_remote(
-                api_schema=api_metadata_schemas[WdtvMetadata._implementation],
-                api_metadata=api_metadatas[WdtvMetadata._implementation],
+                api_schema=api_metadata_schemas[wdtv_impl],
+                api_metadata=api_metadatas[wdtv_impl],
             ),
         )
 
@@ -127,19 +131,23 @@ class RadarrMetadataSettings(RadarrConfigBase):
                 api_metadata.implementation: api_metadata
                 for api_metadata in metadata_api.list_metadata()
             }
-        if EmbyLegacyMetadata._implementation not in api_metadatas:
+        emby_legacy_impl = EmbyLegacyMetadata.__dict__["_implementation"]
+        kodi_emby_impl = KodiEmbyMetadata.__dict__["_implementation"]
+        roksbox_impl = RoksboxMetadata.__dict__["_implementation"]
+        wdtv_impl = WdtvMetadata.__dict__["_implementation"]
+        if emby_legacy_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Emby (Legacy) metadata on Radarr, database might be corrupt",
             )
-        if KodiEmbyMetadata._implementation not in api_metadatas:
+        if kodi_emby_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Kodi (XBMC)/Emby metadata on Radarr, database might be corrupt",
             )
-        if RoksboxMetadata._implementation not in api_metadatas:
+        if roksbox_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find Roksbox metadata on Radarr, database might be corrupt",
             )
-        if WdtvMetadata._implementation not in api_metadatas:
+        if wdtv_impl not in api_metadatas:
             raise RuntimeError(
                 "Unable to find WDTV metadata on Radarr, database might be corrupt",
             )
@@ -164,32 +172,32 @@ class RadarrMetadataSettings(RadarrConfigBase):
                     tree=f"{tree}.emby_legacy",
                     secrets=secrets,
                     remote=remote.emby_legacy,
-                    api_schema=api_metadata_schemas[EmbyLegacyMetadata._implementation],
-                    api_metadata=api_metadatas[EmbyLegacyMetadata._implementation],
+                    api_schema=api_metadata_schemas[emby_legacy_impl],
+                    api_metadata=api_metadatas[emby_legacy_impl],
                     check_unmanaged=check_unmanaged,
                 ),
                 self.kodi_emby._update_remote(
                     tree=f"{tree}.kodi_emby",
                     secrets=secrets,
                     remote=remote.kodi_emby,
-                    api_schema=api_metadata_schemas[KodiEmbyMetadata._implementation],
-                    api_metadata=api_metadatas[KodiEmbyMetadata._implementation],
+                    api_schema=api_metadata_schemas[kodi_emby_impl],
+                    api_metadata=api_metadatas[kodi_emby_impl],
                     check_unmanaged=check_unmanaged,
                 ),
                 self.roksbox._update_remote(
                     tree=f"{tree}.roksbox",
                     secrets=secrets,
                     remote=remote.roksbox,
-                    api_schema=api_metadata_schemas[RoksboxMetadata._implementation],
-                    api_metadata=api_metadatas[RoksboxMetadata._implementation],
+                    api_schema=api_metadata_schemas[roksbox_impl],
+                    api_metadata=api_metadatas[roksbox_impl],
                     check_unmanaged=check_unmanaged,
                 ),
                 self.wdtv._update_remote(
                     tree=f"{tree}.wdtv",
                     secrets=secrets,
                     remote=remote.wdtv,
-                    api_schema=api_metadata_schemas[WdtvMetadata._implementation],
-                    api_metadata=api_metadatas[WdtvMetadata._implementation],
+                    api_schema=api_metadata_schemas[wdtv_impl],
+                    api_metadata=api_metadatas[wdtv_impl],
                     check_unmanaged=check_unmanaged,
                 ),
             ],
