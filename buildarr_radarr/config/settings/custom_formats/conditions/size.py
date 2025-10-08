@@ -22,8 +22,7 @@ from __future__ import annotations
 from typing import Any, List, Literal, Mapping
 
 from buildarr.config import RemoteMapEntry
-from pydantic import Field, field_validator
-from pydantic_core import ValidationInfo
+from pydantic import Field, ValidationInfo, field_validator
 
 from .base import Condition
 

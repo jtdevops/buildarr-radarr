@@ -29,7 +29,7 @@ from buildarr.config import ConfigTrashIDNotFoundError
 from buildarr.state import state
 from buildarr.types import TrashID
 from pydantic import Field, field_validator
-from pydantic_core import ValidationInfo
+from pydantic import ValidationInfo
 from typing_extensions import Self
 
 from ...api import radarr_api_client

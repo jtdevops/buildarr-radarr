@@ -24,7 +24,7 @@ from typing import Any, List, Literal, Mapping, Optional, Set, Union
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password
 from pydantic import Field, SecretStr, field_validator
-from pydantic_core import ValidationInfo
+from pydantic import ValidationInfo
 from typing_extensions import Annotated
 
 from .base import Notification

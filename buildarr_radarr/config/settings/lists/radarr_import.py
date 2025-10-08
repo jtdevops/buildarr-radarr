@@ -26,7 +26,7 @@ from buildarr.config import RemoteMapEntry
 from buildarr.state import state
 from buildarr.types import InstanceName, NonEmptyStr
 from pydantic import AnyHttpUrl, Field, PositiveInt, SecretStr, field_validator
-from pydantic_core import ValidationInfo
+from pydantic import ValidationInfo
 from typing_extensions import Self
 
 from ....api import api_get

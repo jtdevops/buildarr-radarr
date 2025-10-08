@@ -24,7 +24,7 @@ from typing import Any, List, Literal, Mapping, Optional
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Port
 from pydantic import SecretStr, field_validator
-from pydantic_core import ValidationInfo
+from pydantic import ValidationInfo
 
 from .base import TorrentDownloadClient
 

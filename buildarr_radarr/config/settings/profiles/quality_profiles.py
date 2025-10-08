@@ -27,7 +27,7 @@ import radarr
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
 from pydantic import Field, field_validator
-from pydantic_core import ValidationInfo
+from pydantic import ValidationInfo
 from typing_extensions import Annotated, Self
 
 from ....api import radarr_api_client
