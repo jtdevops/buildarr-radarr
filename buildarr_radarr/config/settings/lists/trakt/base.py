@@ -32,7 +32,8 @@ from typing import (
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import LowerCaseNonEmptyStr, NonEmptyStr, Password
-from pydantic import ConstrainedStr, PositiveInt
+from pydantic import PositiveInt, Field
+from typing_extensions import Annotated
 
 from ....util import trakt_expires_encoder
 from ..base import ImportList
@@ -40,14 +41,12 @@ from ..base import ImportList
 logger = getLogger(__name__)
 
 
-class YearRange(ConstrainedStr):
-    """
-    Constrained string type for a singular year or range of years.
-    """
+YearRange = Annotated[str, Field(pattern=r"[0-9]+(?:-[0-9]+)?")]
+"""
+Constrained string type for a singular year or range of years.
 
-    regex = re.compile(r"[0-9]+(?:-[0-9]+)?")
-
-    # TODO: validate that the end year is higher than the start year
+TODO: validate that the end year is higher than the start year
+"""
 
 
 class TraktImportList(ImportList):

@@ -62,7 +62,7 @@ class MailgunNotification(Notification):
     The domain from which the mail will be sent.
     """
 
-    recipient_addresses: Annotated[List[NameEmail], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[List[NameEmail], Field(min_length=1)]
     """
     The recipient email addresses of the notification mail.
 

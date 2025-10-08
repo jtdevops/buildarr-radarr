@@ -42,7 +42,7 @@ logger = getLogger(__name__)
 
 class QualityGroup(RadarrConfigBase):
     name: NonEmptyStr
-    members: Set[NonEmptyStr] = Field(..., min_items=1)
+    members: Set[NonEmptyStr] = Field(..., min_length=1)
 
     def encode(self, group_id: int, api_qualities: Mapping[str, radarr.Quality]) -> Dict[str, Any]:
         return {
@@ -89,7 +89,7 @@ class QualityProfile(RadarrConfigBase):
     If disabled, media files will not be upgraded after they have been downloaded.
     """
 
-    qualities: Annotated[List[Union[NonEmptyStr, QualityGroup]], Field(min_items=1)]
+    qualities: Annotated[List[Union[NonEmptyStr, QualityGroup]], Field(min_length=1)]
     """
     The quality levels (or quality groups) to enable downloading releases for.
     The order determines the priority (highest priority first, lowest priority last).

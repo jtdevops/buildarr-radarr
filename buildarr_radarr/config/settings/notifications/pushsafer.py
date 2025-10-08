@@ -23,7 +23,8 @@ from typing import Any, List, Literal, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password
-from pydantic import ConstrainedInt, Field, validator
+from pydantic import Field, validator
+from typing_extensions import Annotated
 from pydantic.color import Color
 
 from .base import Notification
@@ -35,10 +36,6 @@ class PushsaferPriority(BaseEnum):
     normal = 0
     high = 1
     emergency = 2
-
-
-class PushsaferRetry(ConstrainedInt):
-    ge = 60
 
 
 class PushsaferNotification(Notification):
@@ -76,7 +73,7 @@ class PushsaferNotification(Notification):
     * `emergency`
     """
 
-    retry: Union[Literal[0], PushsaferRetry] = 0
+    retry: Union[Literal[0], Annotated[int, Field(ge=60)]] = 0
     """
     Interval to retry emergency alerts, in seconds.
 

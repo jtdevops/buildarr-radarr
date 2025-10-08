@@ -23,7 +23,8 @@ from typing import Any, List, Literal, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password
-from pydantic import ConstrainedInt, Field, SecretStr, validator
+from pydantic import Field, SecretStr, validator
+from typing_extensions import Annotated
 
 from .base import Notification
 
@@ -39,10 +40,6 @@ class PushoverPriority(BaseEnum):
     normal = 0
     high = 1
     emergency = 2
-
-
-class PushoverRetry(ConstrainedInt):
-    ge = 30
 
 
 class PushoverNotification(Notification):
@@ -85,7 +82,7 @@ class PushoverNotification(Notification):
     * `emergency`
     """
 
-    retry: Union[Literal[0], PushoverRetry] = 0
+    retry: Union[Literal[0], Annotated[int, Field(ge=30)]] = 0
     """
     Interval to retry emergency alerts, in seconds.
 

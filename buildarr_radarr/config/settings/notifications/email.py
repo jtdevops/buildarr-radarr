@@ -79,19 +79,19 @@ class EmailNotification(Notification):
     e.g. `Radarr <radarr@example.com>`.
     """
 
-    recipient_addresses: Annotated[List[NameEmail], Field(min_items=1, unique_items=True)]
+    recipient_addresses: Annotated[List[NameEmail], Field(min_length=1)]
     """
     List of email addresses to directly address the mail to.
 
     At least one address must be provided.
     """
 
-    cc_addresses: Annotated[List[NameEmail], Field(unique_items=True)] = []
+    cc_addresses: List[NameEmail] = []
     """
     Optional list of email addresses to copy (CC) the mail to.
     """
 
-    bcc_addresses: Annotated[List[NameEmail], Field(unique_items=True)] = []
+    bcc_addresses: List[NameEmail] = []
     """
     Optional list of email addresses to blind copy (BCC) the mail to.
     """

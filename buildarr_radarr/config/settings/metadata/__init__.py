@@ -36,7 +36,7 @@ from .roksbox import RoksboxMetadata
 from .wdtv import WdtvMetadata
 
 METADATA_TYPE_MAP = {
-    metadata_type._implementation: metadata_type  # type: ignore[attr-defined]
+    metadata_type.__private_attributes__["_implementation"].default: metadata_type
     for metadata_type in (EmbyLegacyMetadata, KodiEmbyMetadata, RoksboxMetadata, WdtvMetadata)
 }
 
