@@ -71,7 +71,7 @@ class Condition(RadarrConfigBase):
         return cls(
             **cls.get_local_attrs(
                 remote_map=(
-                    cls._base_remote_map + cls._get_remote_map(api_schema_dict) + cls._remote_map
+                    cls.__private_attributes__["_base_remote_map"].default + cls._get_remote_map(api_schema_dict) + cls.__private_attributes__["_remote_map"].default
                 ),
                 remote_attrs=api_condition.to_dict(),
             ),
@@ -86,7 +86,7 @@ class Condition(RadarrConfigBase):
         set_attrs = self.get_create_remote_attrs(
             tree=tree,
             remote_map=(
-                self._base_remote_map + self._get_remote_map(api_schema_dict) + self._remote_map
+                self.__private_attributes__["_base_remote_map"].default + self._get_remote_map(api_schema_dict) + self.__private_attributes__["_remote_map"].default
             ),
         )
         field_values: Dict[str, Any] = {
@@ -109,7 +109,7 @@ class Condition(RadarrConfigBase):
             tree=tree,
             remote=remote,
             remote_map=(
-                self._base_remote_map + self._get_remote_map(api_schema_dict) + self._remote_map
+                self.__private_attributes__["_base_remote_map"].default + self._get_remote_map(api_schema_dict) + self.__private_attributes__["_remote_map"].default
             ),
         )
         if updated:

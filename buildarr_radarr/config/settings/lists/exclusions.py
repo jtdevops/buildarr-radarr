@@ -56,13 +56,13 @@ class ListExclusion(RadarrConfigBase):
 
     @classmethod
     def _from_remote(cls, api_listexclusion: radarr.ImportExclusionsResource) -> Self:
-        return cls(**cls.get_local_attrs(cls._remote_map, api_listexclusion.to_dict()))
+        return cls(**cls.get_local_attrs(cls.__private_attributes__["_remote_map"].default, api_listexclusion.to_dict()))
 
     def _create_remote(self, tree: str, secrets: RadarrSecrets) -> None:
         with radarr_api_client(secrets=secrets) as api_client:
             radarr.ImportExclusionsApi(api_client).create_exclusions(
                 import_exclusions_resource=radarr.ImportExclusionsResource.from_dict(
-                    self.get_create_remote_attrs(tree=tree, remote_map=self._remote_map),
+                    self.get_create_remote_attrs(tree=tree, remote_map=self.__private_attributes__["_remote_map"].default),
                 ),
             )
 
@@ -76,7 +76,7 @@ class ListExclusion(RadarrConfigBase):
         updated, updated_attrs = self.get_update_remote_attrs(
             tree=tree,
             remote=remote,
-            remote_map=self._remote_map,
+            remote_map=self.__private_attributes__["_remote_map"].default,
             set_unchanged=True,
         )
         if updated:

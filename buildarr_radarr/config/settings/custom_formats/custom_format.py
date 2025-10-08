@@ -229,7 +229,7 @@ class CustomFormat(RadarrConfigBase):
             )
         return cls(
             **cls.get_local_attrs(
-                remote_map=cls._remote_map,
+                remote_map=cls.__private_attributes__["_remote_map"].default,
                 remote_attrs=api_customformat.to_dict(),
             ),
             conditions=conditions,
@@ -247,12 +247,12 @@ class CustomFormat(RadarrConfigBase):
                 custom_format_resource=radarr.CustomFormatResource.from_dict(
                     {
                         "name": customformat_name,
-                        **self.get_create_remote_attrs(tree=tree, remote_map=self._remote_map),
+                        **self.get_create_remote_attrs(tree=tree, remote_map=self.__private_attributes__["_remote_map"].default),
                         "specifications": [
                             condition._create_remote(
                                 tree=f"{tree}.conditions[{condition_name!r}]",
                                 api_schema_dict=api_condition_schema_dicts[
-                                    condition._implementation
+                                    condition.__private_attributes__["_implementation"].default
                                 ],
                                 condition_name=condition_name,
                             )
@@ -279,7 +279,7 @@ class CustomFormat(RadarrConfigBase):
         changed, config_attrs = self.get_update_remote_attrs(
             tree=tree,
             remote=remote,
-            remote_map=self._remote_map,
+            remote_map=self.__private_attributes__["_remote_map"].default,
             set_unchanged=True,
         )
         api_condition_dicts: List[Dict[str, Any]] = []
@@ -289,7 +289,7 @@ class CustomFormat(RadarrConfigBase):
                 api_condition_dicts.append(
                     condition._create_remote(
                         tree=condition_tree,
-                        api_schema_dict=api_condition_schema_dicts[condition._implementation],
+                        api_schema_dict=api_condition_schema_dicts[condition.__private_attributes__["_implementation"].default],
                         condition_name=condition_name,
                     ),
                 )
@@ -297,7 +297,7 @@ class CustomFormat(RadarrConfigBase):
             else:
                 condition_changed, api_condition_dict = condition._update_remote(
                     tree=condition_tree,
-                    api_schema_dict=api_condition_schema_dicts[condition._implementation],
+                    api_schema_dict=api_condition_schema_dicts[condition.__private_attributes__["_implementation"].default],
                     remote=remote.conditions[condition_name],  # type: ignore[arg-type]
                     api_condition=api_conditions[condition_name],
                 )

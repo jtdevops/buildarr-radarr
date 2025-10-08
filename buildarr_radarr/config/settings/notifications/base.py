@@ -162,12 +162,12 @@ class Notification(RadarrConfigBase):
         return cls(
             notification_triggers=NotificationTriggers(
                 **NotificationTriggers.get_local_attrs(
-                    remote_map=NotificationTriggers._remote_map,
+                    remote_map=NotificationTriggers.__private_attributes__["_remote_map"].default,
                     remote_attrs=remote_attrs,
                 ),
             ),
             **cls.get_local_attrs(
-                remote_map=cls._get_base_remote_map(tag_ids) + cls._remote_map,
+                remote_map=cls._get_base_remote_map(tag_ids) + cls.__private_attributes__["_remote_map"].default,
                 remote_attrs=remote_attrs,
             ),
         )
@@ -176,7 +176,7 @@ class Notification(RadarrConfigBase):
         return {
             k: v
             for k, v in next(
-                s for s in schemas if s.implementation.lower() == self._implementation.lower()
+                s for s in schemas if s.implementation.lower() == self.__private_attributes__["_implementation"].default.lower()
             )
             .to_dict()
             .items()
@@ -195,11 +195,11 @@ class Notification(RadarrConfigBase):
         set_attrs = {
             **self.notification_triggers.get_create_remote_attrs(
                 tree=f"{tree}.notification_triggers",
-                remote_map=self.notification_triggers._remote_map,
+                remote_map=self.notification_triggers.__private_attributes__["_remote_map"].default,
             ),
             **self.get_create_remote_attrs(
                 tree=tree,
-                remote_map=self._get_base_remote_map(tag_ids) + self._remote_map,
+                remote_map=self._get_base_remote_map(tag_ids) + self.__private_attributes__["_remote_map"].default,
             ),
         }
         field_values: Dict[str, Any] = {
@@ -230,12 +230,12 @@ class Notification(RadarrConfigBase):
         ) = self.notification_triggers.get_update_remote_attrs(
             tree=tree,
             remote=remote.notification_triggers,
-            remote_map=self.notification_triggers._remote_map,
+            remote_map=self.notification_triggers.__private_attributes__["_remote_map"].default,
         )
         base_updated, updated_base_attrs = self.get_update_remote_attrs(
             tree=tree,
             remote=remote,
-            remote_map=self._get_base_remote_map(tag_ids) + self._remote_map,
+            remote_map=self._get_base_remote_map(tag_ids) + self.__private_attributes__["_remote_map"].default,
         )
         if triggers_updated or base_updated:
             api_schema = self._get_api_schema(api_notification_schemas)

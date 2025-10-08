@@ -95,7 +95,7 @@ class DownloadClient(RadarrConfigBase):
     def _from_remote(cls, tag_ids: Mapping[str, int], remote_attrs: Mapping[str, Any]) -> Self:
         return cls(
             **cls.get_local_attrs(
-                cls._get_base_remote_map(tag_ids=tag_ids) + cls._remote_map,
+                cls._get_base_remote_map(tag_ids=tag_ids) + cls.__private_attributes__["_remote_map"].default,
                 remote_attrs,
             ),
         )
@@ -104,7 +104,7 @@ class DownloadClient(RadarrConfigBase):
         return {
             k: v
             for k, v in next(
-                s for s in schemas if s.implementation.lower() == self._implementation.lower()
+                s for s in schemas if s.implementation.lower() == self.__private_attributes__["_implementation"].default.lower()
             )
             .to_dict()
             .items()
@@ -122,7 +122,7 @@ class DownloadClient(RadarrConfigBase):
         api_schema = self._get_api_schema(api_downloadclient_schemas)
         set_attrs = self.get_create_remote_attrs(
             tree=tree,
-            remote_map=self._get_base_remote_map(tag_ids=tag_ids) + self._remote_map,
+            remote_map=self._get_base_remote_map(tag_ids=tag_ids) + self.__private_attributes__["_remote_map"].default,
         )
         field_values: Dict[str, Any] = {
             field["name"]: field["value"] for field in set_attrs["fields"]
@@ -148,7 +148,7 @@ class DownloadClient(RadarrConfigBase):
         updated, updated_attrs = self.get_update_remote_attrs(
             tree=tree,
             remote=remote,
-            remote_map=self._get_base_remote_map(tag_ids=tag_ids) + self._remote_map,
+            remote_map=self._get_base_remote_map(tag_ids=tag_ids) + self.__private_attributes__["_remote_map"].default,
             set_unchanged=True,
         )
         if updated:

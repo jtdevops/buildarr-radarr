@@ -221,7 +221,7 @@ class RadarrListsSettings(RadarrConfigBase):
         updated, remote_attrs = self.get_update_remote_attrs(
             tree=tree,
             remote=remote,
-            remote_map=self._remote_map,
+            remote_map=self.__private_attributes__["_remote_map"].default,
             check_unmanaged=check_unmanaged,
             set_unchanged=True,
         )
