@@ -22,9 +22,10 @@ from __future__ import annotations
 from typing import Any, List, Literal, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, Color, NonEmptyStr, Password
+from buildarr.types import BaseEnum, NonEmptyStr, Password
 from pydantic import Field, field_validator
 from pydantic import ValidationInfo
+from pydantic.color import Color
 from typing_extensions import Annotated
 
 from .base import Notification

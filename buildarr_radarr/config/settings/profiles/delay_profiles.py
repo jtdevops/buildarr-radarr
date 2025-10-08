@@ -299,7 +299,7 @@ class RadarrDelayProfilesSettings(RadarrConfigBase):
     [WikiArr](https://wiki.servarr.com/radarr/settings#delay-profiles).
     """
 
-    delete_unmanaged = False
+    delete_unmanaged: bool = False
     """
     Controls how Buildarr manages existing delay profiles in Radarr when no delay profiles
     are defined in Buildarr.
