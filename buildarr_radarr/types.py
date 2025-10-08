@@ -21,15 +21,12 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import SecretStr
+from pydantic import Field, SecretStr
+from typing_extensions import Annotated
 
 RadarrProtocol = Literal["http", "https"]
 
-
-class ArrApiKey(SecretStr):
-    """
-    Constrained secret string type for an Arr stack application API key.
-    """
-
-    min_length = 32
-    max_length = 32
+ArrApiKey = Annotated[SecretStr, Field(min_length=32, max_length=32)]
+"""
+Constrained secret string type for an Arr stack application API key.
+"""

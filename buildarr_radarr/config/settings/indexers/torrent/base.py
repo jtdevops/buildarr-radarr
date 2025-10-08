@@ -26,7 +26,7 @@ import radarr
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import PositiveInt, validator
+from pydantic import PositiveInt, field_validator
 
 from ..base import Indexer
 
@@ -84,7 +84,8 @@ class TorrentIndexer(Indexer):
         #   2. G_FREELEECH -> g-freeleech
         return value.lower().replace("_", "-").replace(" ", "-")
 
-    @validator("required_flags")
+    @field_validator("required_flags", mode="before")
+    @classmethod
     def validate_flag(cls, value: Set[str]) -> Set[str]:
         return set(cls._flag_parse(flag) for flag in value)
 

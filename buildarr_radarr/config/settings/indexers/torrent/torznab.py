@@ -23,7 +23,7 @@ from typing import Iterable, List, Literal, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr, Password
-from pydantic import AnyHttpUrl, validator
+from pydantic import AnyHttpUrl, field_validator
 
 from ..util import NabCategory
 from .base import TorrentIndexer
@@ -112,7 +112,8 @@ class TorznabIndexer(TorrentIndexer):
         ),
     ]
 
-    @validator("categories")
+    @field_validator("categories", mode="before")
+    @classmethod
     def validate_categories(
         cls,
         value: Iterable[Union[NabCategory, int]],

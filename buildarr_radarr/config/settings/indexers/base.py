@@ -26,7 +26,7 @@ import radarr
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import Field, validator
+from pydantic import Field, field_validator
 from typing_extensions import Self
 
 from ....api import radarr_api_client
@@ -88,7 +88,8 @@ class Indexer(RadarrConfigBase):
     _implementation: str
     _remote_map: List[RemoteMapEntry] = []
 
-    @validator("multi_languages")
+    @field_validator("multi_languages", mode="before")
+    @classmethod
     def validate_multi_languages(cls, value: Set[str]) -> Set[str]:
         return set(language_parse(language) for language in value)
 

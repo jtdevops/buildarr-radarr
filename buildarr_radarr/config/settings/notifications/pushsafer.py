@@ -22,9 +22,10 @@ from __future__ import annotations
 from typing import Any, List, Literal, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
-from buildarr.types import BaseEnum, NonEmptyStr, Password
-from pydantic import ConstrainedInt, Field, validator
-from pydantic.color import Color
+from buildarr.types import BaseEnum, Color, NonEmptyStr, Password
+from pydantic import Field, field_validator
+from pydantic_core import ValidationInfo
+from typing_extensions import Annotated
 
 from .base import Notification
 
@@ -37,8 +38,7 @@ class PushsaferPriority(BaseEnum):
     emergency = 2
 
 
-class PushsaferRetry(ConstrainedInt):
-    ge = 60
+PushsaferRetry = Annotated[int, Field(ge=60)]
 
 
 class PushsaferNotification(Notification):
@@ -119,16 +119,18 @@ class PushsaferNotification(Notification):
     Specify either a colour (e.g. `yellow`) or a hex code (`#00FF00`).
     """
 
-    @validator("expire")
-    def validate_expire(cls, value: int, values: Mapping[str, Any]) -> int:
-        try:
-            retry = values["retry"]
-        except KeyError:
-            return value
-        if retry and value < retry:
-            raise ValueError(
-                f"'expire' ({value}) is shorter than 'retry' ({retry})",
-            )
+    @field_validator("expire", mode="after")
+    @classmethod
+    def validate_expire(cls, value: int, info: ValidationInfo) -> int:
+        if info.data:
+            try:
+                retry = info.data["retry"]
+            except KeyError:
+                return value
+            if retry and value < retry:
+                raise ValueError(
+                    f"'expire' ({value}) is shorter than 'retry' ({retry})",
+                )
         return value
 
     _implementation: str = "Pushsafer"

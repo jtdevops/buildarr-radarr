@@ -25,7 +25,8 @@ from typing import Any, Dict, Iterable, List, Literal, Mapping, Optional, Set, U
 from buildarr.config import RemoteMapEntry
 from buildarr.state import state
 from buildarr.types import InstanceName, NonEmptyStr
-from pydantic import AnyHttpUrl, Field, PositiveInt, SecretStr, validator
+from pydantic import AnyHttpUrl, Field, PositiveInt, SecretStr, field_validator
+from pydantic_core import ValidationInfo
 from typing_extensions import Self
 
 from ....api import api_get
@@ -224,18 +225,19 @@ class RadarrImportList(ImportList):
         """
         return api_get(cls._get_secrets(instance_name), f"/api/v3/{resource_type}")
 
-    @validator("api_key", always=True)
+    @field_validator("api_key", mode="after")
+    @classmethod
     def validate_api_key(
         cls,
         value: Optional[SecretStr],
-        values: Mapping[str, Any],
+        info: ValidationInfo,
     ) -> Optional[SecretStr]:
         """
         Validate the `api_key` attribute after parsing.
 
         Args:
             value (Optional[str]): `api_key` value.
-            values (Mapping[str, Any]): Currently parsed attributes. `instance_name` is checked.
+            info (ValidationInfo): Validation context. `instance_name` is checked.
 
         Raises:
             ValueError: If `api_key` is undefined when `instance_name` is also undefined.
@@ -243,33 +245,36 @@ class RadarrImportList(ImportList):
         Returns:
             Validated `api_key` value
         """
-        if not values.get("instance_name", None) and not value:
+        if info.data and not info.data.get("instance_name", None) and not value:
             raise ValueError("required if 'instance_name' is undefined")
         return value
 
-    @validator("source_quality_profiles", "source_tags", each_item=True)
+    @field_validator("source_quality_profiles", "source_tags", mode="after")
+    @classmethod
     def validate_source_resource_ids(
         cls,
-        value: Union[int, str],
-        values: Dict[str, Any],
-    ) -> Union[int, str]:
+        value: Set[Union[int, str]],
+        info: ValidationInfo,
+    ) -> Set[Union[int, str]]:
         """
         Validate that all resource references are IDs (integers) if `instance_name` is undefined.
 
         Args:
-            value (Union[int, str]): Resource reference (ID or name).
-            values (Mapping[str, Any]): Currently parsed attributes. `instance_name` is checked.
+            value (Set[Union[int, str]]): Resource references (IDs or names).
+            info (ValidationInfo): Validation context. `instance_name` is checked.
 
         Raises:
             ValueError: If the resource reference is a name and `instance_name` is undefined.
 
         Returns:
-            Validated resource reference
+            Validated resource references
         """
-        if not values.get("instance_name", None) and not isinstance(value, int):
-            raise ValueError(
-                "values must be IDs (not names) if 'instance_name' is undefined",
-            )
+        if info.data and not info.data.get("instance_name", None):
+            for item in value:
+                if not isinstance(item, int):
+                    raise ValueError(
+                        "values must be IDs (not names) if 'instance_name' is undefined",
+                    )
         return value
 
     @classmethod
@@ -352,7 +357,7 @@ class RadarrImportList(ImportList):
             ignore_nonexistent_ids=ignore_nonexistent_ids,
             name_key="label",
         )
-        return self.copy(
+        return self.model_copy(
             update={
                 "instance_name": instance_name,
                 "api_key": api_key,

@@ -26,7 +26,7 @@ import radarr
 
 from buildarr.secrets import SecretsPlugin
 from buildarr.types import NonEmptyStr, Port
-from pydantic import validator
+from pydantic import field_validator
 from radarr.exceptions import UnauthorizedException
 
 from .api import api_get, radarr_api_client
@@ -68,7 +68,8 @@ class RadarrSecrets(_RadarrSecrets):
             url_base=self.url_base,
         )
 
-    @validator("url_base")
+    @field_validator("url_base", mode="before")
+    @classmethod
     def validate_url_base(cls, value: Optional[str]) -> Optional[str]:
         return f"/{value.strip('/')}" if value and value.strip("/") else None
 

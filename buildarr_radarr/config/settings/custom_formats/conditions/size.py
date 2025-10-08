@@ -22,7 +22,8 @@ from __future__ import annotations
 from typing import Any, List, Literal, Mapping
 
 from buildarr.config import RemoteMapEntry
-from pydantic import Field, validator
+from pydantic import Field, field_validator
+from pydantic_core import ValidationInfo
 
 from .base import Condition
 
@@ -55,16 +56,18 @@ class SizeCondition(Condition):
         ("max", "max", {"is_field": True}),
     ]
 
-    @validator("max")
-    def validate_min_max(cls, value: int, values: Mapping[str, Any]) -> int:
-        try:
-            size_min: int = values["min"]
-            if value < size_min:
-                raise ValueError(
-                    f"'max' ({value}) is not greater than 'min' ({size_min})",
-                )
-        except KeyError:
-            # `min` only doesn't exist when it failed type validation.
-            # If it doesn't exist, skip this validation.
-            pass
+    @field_validator("max", mode="after")
+    @classmethod
+    def validate_min_max(cls, value: int, info: ValidationInfo) -> int:
+        if info.data:
+            try:
+                size_min: int = info.data["min"]
+                if value < size_min:
+                    raise ValueError(
+                        f"'max' ({value}) is not greater than 'min' ({size_min})",
+                    )
+            except KeyError:
+                # `min` only doesn't exist when it failed type validation.
+                # If it doesn't exist, skip this validation.
+                pass
         return value

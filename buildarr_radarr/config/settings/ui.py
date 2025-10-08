@@ -25,7 +25,7 @@ import radarr
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, LowerCaseNonEmptyStr
-from pydantic import validator
+from pydantic import field_validator
 from typing_extensions import Self
 
 from ...api import radarr_api_client
@@ -202,7 +202,8 @@ class RadarrUISettings(RadarrConfigBase):
     The display language for the Radarr UI.
     """
 
-    @validator("movie_info_language", "ui_language")
+    @field_validator("movie_info_language", "ui_language", mode="after")
+    @classmethod
     def disallow_any(cls, value: str) -> str:
         if value == "any":
             raise ValueError(
@@ -210,7 +211,8 @@ class RadarrUISettings(RadarrConfigBase):
             )
         return value
 
-    @validator("ui_language")
+    @field_validator("ui_language", mode="after")
+    @classmethod
     def disallow_original(cls, value: str) -> str:
         if value == "original":
             raise ValueError(

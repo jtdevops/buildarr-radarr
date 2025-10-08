@@ -28,7 +28,8 @@ import radarr
 from buildarr.config import ConfigTrashIDNotFoundError
 from buildarr.state import state
 from buildarr.types import TrashID
-from pydantic import Field, validator
+from pydantic import Field, field_validator
+from pydantic_core import ValidationInfo
 from typing_extensions import Self
 
 from ...api import radarr_api_client
@@ -100,48 +101,52 @@ class QualityDefinition(RadarrConfigBase):
     If set to `null` or `400`, the maximum bit rate will be unlimited.
     """
 
-    @validator("preferred")
+    @field_validator("preferred", mode="after")
+    @classmethod
     def validate_preferred(
         cls,
         value: Optional[float],
-        values: Mapping[str, Any],
+        info: ValidationInfo,
     ) -> Optional[float]:
         if value is None or value >= QUALITYDEFINITION_PREFERRED_MAX:
             return None
-        try:
-            quality_min: float = values["min"]
-            if (value - quality_min) < 1:
-                raise ValueError(
-                    f"'preferred' ({value}) is not at least 1 greater than 'min' ({quality_min})",
-                )
-        except KeyError:
-            # `min` only doesn't exist when it failed type validation.
-            # If it doesn't exist, skip validation that uses it.
-            pass
+        if info.data:
+            try:
+                quality_min: float = info.data["min"]
+                if (value - quality_min) < 1:
+                    raise ValueError(
+                        f"'preferred' ({value}) is not at least 1 greater than 'min' ({quality_min})",
+                    )
+            except KeyError:
+                # `min` only doesn't exist when it failed type validation.
+                # If it doesn't exist, skip validation that uses it.
+                pass
         return value
 
-    @validator("max")
+    @field_validator("max", mode="after")
+    @classmethod
     def validate_max(
         cls,
         value: Optional[float],
-        values: Mapping[str, Any],
+        info: ValidationInfo,
     ) -> Optional[float]:
         if value is None or value >= QUALITYDEFINITION_MAX:
             return None
-        try:
+        if info.data:
             try:
-                quality_preferred = float(values["preferred"])
-            except TypeError:
-                quality_preferred = QUALITYDEFINITION_PREFERRED_MAX
-            if (value - quality_preferred) < 1:
-                raise ValueError(
-                    f"'max' ({value}) is not "
-                    f"at least 1 greater than 'preferred' ({quality_preferred})",
-                )
-        except KeyError:
-            # `preferred` only doesn't exist when it failed type validation.
-            # If it doesn't exist, skip validation that uses it.
-            pass
+                try:
+                    quality_preferred = float(info.data["preferred"])
+                except TypeError:
+                    quality_preferred = QUALITYDEFINITION_PREFERRED_MAX
+                if (value - quality_preferred) < 1:
+                    raise ValueError(
+                        f"'max' ({value}) is not "
+                        f"at least 1 greater than 'preferred' ({quality_preferred})",
+                    )
+            except KeyError:
+                # `preferred` only doesn't exist when it failed type validation.
+                # If it doesn't exist, skip validation that uses it.
+                pass
         return value
 
 

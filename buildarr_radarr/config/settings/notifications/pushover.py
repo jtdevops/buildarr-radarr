@@ -23,14 +23,13 @@ from typing import Any, List, Literal, Mapping, Optional, Set, Union
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import BaseEnum, NonEmptyStr, Password
-from pydantic import ConstrainedInt, Field, SecretStr, validator
+from pydantic import Field, SecretStr, field_validator
+from pydantic_core import ValidationInfo
+from typing_extensions import Annotated
 
 from .base import Notification
 
-
-class PushoverApiKey(SecretStr):
-    min_length = 30
-    max_length = 30
+PushoverApiKey = Annotated[SecretStr, Field(min_length=30, max_length=30)]
 
 
 class PushoverPriority(BaseEnum):
@@ -41,8 +40,7 @@ class PushoverPriority(BaseEnum):
     emergency = 2
 
 
-class PushoverRetry(ConstrainedInt):
-    ge = 30
+PushoverRetry = Annotated[int, Field(ge=30)]
 
 
 class PushoverNotification(Notification):
@@ -107,16 +105,18 @@ class PushoverNotification(Notification):
     Leave unset, blank or set to `null` to use the default.
     """
 
-    @validator("expire")
-    def validate_expire(cls, value: int, values: Mapping[str, Any]) -> int:
-        try:
-            retry = values["retry"]
-        except KeyError:
-            return value
-        if retry and value < retry:
-            raise ValueError(
-                f"'expire' ({value}) is shorter than 'retry' ({retry})",
-            )
+    @field_validator("expire", mode="after")
+    @classmethod
+    def validate_expire(cls, value: int, info: ValidationInfo) -> int:
+        if info.data:
+            try:
+                retry = info.data["retry"]
+            except KeyError:
+                return value
+            if retry and value < retry:
+                raise ValueError(
+                    f"'expire' ({value}) is shorter than 'retry' ({retry})",
+                )
         return value
 
     _implementation: str = "Pushover"

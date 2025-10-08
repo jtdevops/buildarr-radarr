@@ -23,7 +23,7 @@ from typing import TYPE_CHECKING, Any, Dict, Optional
 
 from buildarr.config import ConfigPlugin
 from buildarr.types import NonEmptyStr, Port
-from pydantic import validator
+from pydantic import field_validator
 from typing_extensions import Self
 
 from ..types import ArrApiKey, RadarrProtocol
@@ -157,7 +157,8 @@ class RadarrInstanceConfig(_RadarrInstanceConfig):
     Configuration options for Radarr itself are set within this structure.
     """
 
-    @validator("url_base")
+    @field_validator("url_base", mode="before")
+    @classmethod
     def validate_url_base(cls, value: Optional[str]) -> Optional[str]:
         return f"/{value.strip('/')}" if value and value.strip("/") else None
 
@@ -169,7 +170,7 @@ class RadarrInstanceConfig(_RadarrInstanceConfig):
         return False
 
     def post_init_render(self, secrets: RadarrSecrets) -> Self:
-        copy = self.copy(deep=True)
+        copy = self.model_copy(deep=True)
         copy._post_init_render(secrets=secrets)
         return copy
 

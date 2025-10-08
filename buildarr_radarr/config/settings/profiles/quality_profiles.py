@@ -26,7 +26,8 @@ import radarr
 
 from buildarr.config import RemoteMapEntry
 from buildarr.types import NonEmptyStr
-from pydantic import Field, validator
+from pydantic import Field, field_validator
+from pydantic_core import ValidationInfo
 from typing_extensions import Annotated, Self
 
 from ....api import radarr_api_client
@@ -149,7 +150,8 @@ class QualityProfile(RadarrConfigBase):
     * `portuguese-brazil`
     """
 
-    @validator("qualities")
+    @field_validator("qualities", mode="after")
+    @classmethod
     def validate_qualities(
         cls,
         value: List[Union[str, QualityGroup]],
@@ -178,50 +180,55 @@ class QualityProfile(RadarrConfigBase):
                 quality_name_map[name] = quality
         return value
 
-    @validator("upgrade_until_quality")
+    @field_validator("upgrade_until_quality", mode="after")
+    @classmethod
     def validate_upgrade_until_quality(
         cls,
         value: Optional[str],
-        values: Dict[str, Any],
+        info: ValidationInfo,
     ) -> Optional[str]:
-        try:
-            upgrades_allowed: bool = values["upgrades_allowed"]
-            qualities: Sequence[Union[str, QualityGroup]] = values["qualities"]
-        except KeyError:
-            return value
-        # If `upgrades_allowed` is `False`, set `upgrade_until_quality` to `None`
-        # to make sure Buildarr ignores whatever it is currently set to
-        # on the remote instance.
-        if not upgrades_allowed:
-            return None
-        # Subsequent checks now assume that `upgrades_allowed` is `True`,
-        # this parameter is required and defined to a valid value.
-        if not value:
-            raise ValueError("required if 'upgrades_allowed' is True")
-        for quality in qualities:
-            quality_name = quality.name if isinstance(quality, QualityGroup) else quality
-            if value == quality_name:
-                break
-        else:
-            raise ValueError("must be set to a value enabled in 'qualities'")
+        if info.data:
+            try:
+                upgrades_allowed: bool = info.data["upgrades_allowed"]
+                qualities: Sequence[Union[str, QualityGroup]] = info.data["qualities"]
+            except KeyError:
+                return value
+            # If `upgrades_allowed` is `False`, set `upgrade_until_quality` to `None`
+            # to make sure Buildarr ignores whatever it is currently set to
+            # on the remote instance.
+            if not upgrades_allowed:
+                return None
+            # Subsequent checks now assume that `upgrades_allowed` is `True`,
+            # this parameter is required and defined to a valid value.
+            if not value:
+                raise ValueError("required if 'upgrades_allowed' is True")
+            for quality in qualities:
+                quality_name = quality.name if isinstance(quality, QualityGroup) else quality
+                if value == quality_name:
+                    break
+            else:
+                raise ValueError("must be set to a value enabled in 'qualities'")
         return value
 
-    @validator("upgrade_until_custom_format_score")
-    def validate_upgrade_until_custom_format_score(cls, value: int, values: Dict[str, Any]) -> int:
-        try:
-            minimum_custom_format_score = values["minimum_custom_format_score"]
-        except KeyError:
-            return value
-        if value < minimum_custom_format_score:
-            raise ValueError(
-                (
-                    f"value ({value}) must be greater than "
-                    f"'minimum_custom_format_score' ({minimum_custom_format_score})"
-                ),
-            )
+    @field_validator("upgrade_until_custom_format_score", mode="after")
+    @classmethod
+    def validate_upgrade_until_custom_format_score(cls, value: int, info: ValidationInfo) -> int:
+        if info.data:
+            try:
+                minimum_custom_format_score = info.data["minimum_custom_format_score"]
+            except KeyError:
+                return value
+            if value < minimum_custom_format_score:
+                raise ValueError(
+                    (
+                        f"value ({value}) must be greater than "
+                        f"'minimum_custom_format_score' ({minimum_custom_format_score})"
+                    ),
+                )
         return value
 
-    @validator("custom_formats")
+    @field_validator("custom_formats", mode="after")
+    @classmethod
     def validate_custom_format(cls, value: List[CustomFormatScore]) -> List[CustomFormatScore]:
         custom_format_names: Dict[str, Optional[int]] = {}
         custom_formats: List[CustomFormatScore] = []
@@ -241,7 +248,8 @@ class QualityProfile(RadarrConfigBase):
             custom_formats.append(cf)
         return custom_formats
 
-    @validator("language")
+    @field_validator("language", mode="before")
+    @classmethod
     def validate_language(cls, value: str) -> str:
         return language_parse(value)
 
