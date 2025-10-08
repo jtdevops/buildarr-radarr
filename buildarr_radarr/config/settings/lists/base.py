@@ -153,7 +153,7 @@ class ImportList(RadarrConfigBase):
     ) -> Self:
         return cls(
             **cls.get_local_attrs(
-                (cls._get_base_remote_map(quality_profile_ids, tag_ids) + cls._remote_map),
+                (cls._get_base_remote_map(quality_profile_ids, tag_ids) + cls.__private_attributes__["_remote_map"].default),
                 remote_attrs,
             ),
         )

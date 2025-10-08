@@ -83,11 +83,11 @@ class GeneralSettings(RadarrConfigBase):
         return cls(
             **cls.get_local_attrs(
                 remote_map=(
-                    cls._remote_map
+                    cls.__private_attributes__["_remote_map"].default
                     + (
-                        cls._v5_remote_map
+                        cls.__private_attributes__["_v5_remote_map"].default
                         if Version(secrets.version) >= Version("5.0")
-                        else cls._v4_remote_map
+                        else cls.__private_attributes__["_v4_remote_map"].default
                     )
                 ),
                 remote_attrs=remote_attrs,

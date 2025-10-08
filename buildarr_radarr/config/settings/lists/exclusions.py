@@ -56,7 +56,7 @@ class ListExclusion(RadarrConfigBase):
 
     @classmethod
     def _from_remote(cls, api_listexclusion: radarr.ImportExclusionsResource) -> Self:
-        return cls(**cls.get_local_attrs(cls._remote_map, api_listexclusion.to_dict()))
+        return cls(**cls.get_local_attrs(cls.__private_attributes__["_remote_map"].default, api_listexclusion.to_dict()))
 
     def _create_remote(self, tree: str, secrets: RadarrSecrets) -> None:
         with radarr_api_client(secrets=secrets) as api_client:

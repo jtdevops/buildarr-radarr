@@ -94,7 +94,7 @@ class RadarrMetadataSettings(RadarrConfigBase):
                 "Unable to find WDTV metadata on Radarr, database might be corrupt",
             )
         return cls(
-            **cls.get_local_attrs(remote_map=cls._remote_map, remote_attrs=api_config.to_dict()),
+            **cls.get_local_attrs(remote_map=cls.__private_attributes__["_remote_map"].default, remote_attrs=api_config.to_dict()),
             emby_legacy=EmbyLegacyMetadata._from_remote(
                 api_schema=api_metadata_schemas[emby_legacy_impl],
                 api_metadata=api_metadatas[emby_legacy_impl],

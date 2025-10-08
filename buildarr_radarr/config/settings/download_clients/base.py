@@ -95,7 +95,7 @@ class DownloadClient(RadarrConfigBase):
     def _from_remote(cls, tag_ids: Mapping[str, int], remote_attrs: Mapping[str, Any]) -> Self:
         return cls(
             **cls.get_local_attrs(
-                cls._get_base_remote_map(tag_ids=tag_ids) + cls._remote_map,
+                cls._get_base_remote_map(tag_ids=tag_ids) + cls.__private_attributes__["_remote_map"].default,
                 remote_attrs,
             ),
         )

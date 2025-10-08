@@ -56,8 +56,8 @@ class Metadata(RadarrConfigBase):
         return cls(
             **cls.get_local_attrs(
                 remote_map=(
-                    cls._base_remote_map
-                    + cls._remote_map
+                    cls.__private_attributes__["_base_remote_map"].default
+                    + cls.__private_attributes__["_remote_map"].default
                     + cls._get_remote_map(api_schema=api_schema)
                 ),
                 remote_attrs=api_metadata.to_dict(),

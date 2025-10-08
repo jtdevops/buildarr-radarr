@@ -162,12 +162,12 @@ class Notification(RadarrConfigBase):
         return cls(
             notification_triggers=NotificationTriggers(
                 **NotificationTriggers.get_local_attrs(
-                    remote_map=NotificationTriggers._remote_map,
+                    remote_map=NotificationTriggers.__private_attributes__["_remote_map"].default,
                     remote_attrs=remote_attrs,
                 ),
             ),
             **cls.get_local_attrs(
-                remote_map=cls._get_base_remote_map(tag_ids) + cls._remote_map,
+                remote_map=cls._get_base_remote_map(tag_ids) + cls.__private_attributes__["_remote_map"].default,
                 remote_attrs=remote_attrs,
             ),
         )

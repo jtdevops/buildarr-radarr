@@ -196,7 +196,7 @@ class Indexer(RadarrConfigBase):
                         downloadclient_ids=downloadclient_ids,
                         tag_ids=tag_ids,
                     )
-                    + cls._remote_map
+                    + cls.__private_attributes__["_remote_map"].default
                 ),
                 remote_attrs=api_indexer.to_dict(),
             ),

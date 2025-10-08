@@ -210,7 +210,7 @@ class RadarrIndexersSettings(RadarrConfigBase):
                 api_indexer=api_indexer,
             )
         return cls(
-            **cls.get_local_attrs(cls._remote_map, api_indexer_config.to_dict()),
+            **cls.get_local_attrs(cls.__private_attributes__["_remote_map"].default, api_indexer_config.to_dict()),
             definitions=definitions,
         )
 

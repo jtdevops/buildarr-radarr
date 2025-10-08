@@ -437,12 +437,12 @@ class RadarrMediaManagementSettings(RadarrConfigBase):
         return cls(
             # Episode Naming
             **cls.get_local_attrs(
-                remote_map=cls._naming_remote_map,
+                remote_map=cls.__private_attributes__["_naming_remote_map"].default,
                 remote_attrs=api_naming_config.to_dict(),
             ),
             # All other sections except Root Folders
             **cls.get_local_attrs(
-                remote_map=cls._mediamanagement_remote_map,
+                remote_map=cls.__private_attributes__["_mediamanagement_remote_map"].default,
                 remote_attrs=api_mediamanagement_config.to_dict(),
             ),
             # Root Folders
