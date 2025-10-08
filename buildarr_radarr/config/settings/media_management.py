@@ -119,6 +119,16 @@ class RootFoldersSettings(RadarrConfigBase):
     Define root folder paths to add to Radarr here.
     """
 
+    @classmethod
+    def from_remote(cls, secrets: RadarrSecrets) -> Self:
+        with radarr_api_client(secrets=secrets) as api_client:
+            rootfolder_api = radarr.RootFolderApi(api_client)
+            root_folders = {
+                api_rootfolder.path
+                for api_rootfolder in rootfolder_api.list_root_folder()
+            }
+        return cls(definitions=root_folders)
+
     def update_remote(
         self,
         tree: str,
