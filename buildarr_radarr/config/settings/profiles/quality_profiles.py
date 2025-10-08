@@ -218,7 +218,8 @@ class QualityProfile(RadarrConfigBase):
                 minimum_custom_format_score = info.data["minimum_custom_format_score"]
             except KeyError:
                 return value
-            if value < minimum_custom_format_score:
+            # Allow 0 as a special value (disabled/no limit)
+            if value > 0 and value < minimum_custom_format_score:
                 raise ValueError(
                     (
                         f"value ({value}) must be greater than "
